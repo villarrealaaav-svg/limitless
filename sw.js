@@ -1,16 +1,16 @@
-const CACHE = 'limitless-v1';
-const ASSETS = [
+const CACHE = 'limitless-v2';
+
+// Solo los archivos críticos del launcher en install — el resto se cachea lazy
+const CORE = [
   './index.html',
-  './mi-horario.html',
-  './finanzas.html',
-  './logo-av.png',
   './manifest.json',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './logo-av.png'
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
   self.skipWaiting();
 });
 
@@ -22,23 +22,27 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('message', e => {
-  if(e.data&&e.data.type==='NOTIF'){
-    const{title,body,tag,icon}=e.data;
-    self.registration.showNotification(title,{body,icon,tag,badge:icon,vibrate:[200,100,200]});
+  if (e.data && e.data.type === 'NOTIF') {
+    const { title, body, tag, icon } = e.data;
+    self.registration.showNotification(title, { body, icon, tag, badge: icon, vibrate: [200, 100, 200] });
   }
 });
 
 self.addEventListener('fetch', e => {
-  if (e.request.url.includes('firebase') || e.request.url.includes('fonts.g')) {
+  // Firebase y Fonts: red primero, sin cachear
+  if (e.request.url.includes('firebase') || e.request.url.includes('fonts.g') || e.request.url.includes('gstatic')) {
     e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
     return;
   }
+  // Todo lo demás: cache-first, cachea lazily si no existe
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;
       return fetch(e.request).then(res => {
-        const clone = res.clone();
-        caches.open(CACHE).then(c => c.put(e.request, clone));
+        if (res.ok) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+        }
         return res;
       });
     })
