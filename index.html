@@ -259,11 +259,14 @@ footer{
 <script>
 (function() {
   const splash = document.getElementById('splash');
-  const t = 1900;
   setTimeout(() => {
     splash.classList.add('exit');
     setTimeout(() => { splash.remove(); }, 700);
-  }, t);
+  }, 1900);
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
 })();
 </script>
 </body>
