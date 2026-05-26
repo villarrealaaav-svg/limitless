@@ -8,6 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -159,6 +161,10 @@ tbody tr:hover td{background:rgba(42,37,32,.03)}
 @media(max-width:440px){
   main{padding:11px 11px 72px}.kpi-val{font-size:15px}.proj-item{min-width:80px}.field.fw{min-width:130px}
 }
+.sync-row{display:flex;align-items:center;gap:5px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--b1);display:inline-block;transition:background .5s}
+.sync-dot.on{background:var(--g)}
+.sync-lbl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--m2);font-weight:600;font-family:var(--font)}
 </style>
 </head>
 <body>
@@ -169,6 +175,7 @@ tbody tr:hover td{background:rgba(42,37,32,.03)}
 <header class="hdr">
   <div class="hdr-brand"><a href="index.html" style="color:var(--m2);text-decoration:none;font-size:16px;line-height:1;padding:2px 4px;border-radius:4px;transition:color .15s" title="Volver al launcher">←</a><div class="hdr-dot"></div>CTRLFIN</div>
   <div class="hdr-right">
+    <div class="sync-row" id="cf-sync-row" hidden><span class="sync-dot" id="cf-sync-dot"></span><span class="sync-lbl" id="cf-sync-lbl">sync</span></div>
     <span id="save-ind">● guardado</span>
     <button class="hdr-btn pri" onclick="exportHTML()">↓ Exportar</button>
   </div>
@@ -1037,5 +1044,97 @@ renderProjection();
 renderRecent();
 renderDatalists();
 initPin();
+</script>
+
+<script>
+// ── FIREBASE SYNC ────────────────────────────────────────────────────
+(function() {
+  const FB_CONF = {
+    apiKey:      "AIzaSyAf1fCH3Fuk0Y0UcrLXjJWCmldu3Aktrmo",
+    databaseURL: "https://mi-horario-3746e-default-rtdb.firebaseio.com"
+  };
+  const FB_PATH = 'ctrlfin/s';
+  let fireDb = null, _fbTimer = null, _localTs = Date.now();
+
+  function dot(state) {
+    const row = document.getElementById('cf-sync-row');
+    const d   = document.getElementById('cf-sync-dot');
+    const lbl = document.getElementById('cf-sync-lbl');
+    if (!row) return;
+    row.hidden = false;
+    d.className = 'sync-dot' + (state === 'on' ? ' on' : '');
+    lbl.textContent = state === 'on' ? 'Sincronizado' : state === 'sync' ? 'Sincronizando…' : 'Sin conexión';
+  }
+
+  function applyRemote(remote) {
+    delete remote._ts;
+    S = remote;
+    ['goals','calcHistory'].forEach(k => { if (!S[k]) S[k] = []; });
+    if (!S.centros)    S.centros    = [];
+    if (!S.baseCentros) S.baseCentros = [];
+    if (!S.txSort)     S.txSort     = {col:'fecha',dir:'desc'};
+    if (!S.nextId)     S.nextId     = {ing:1,egr:1};
+    try { localStorage.setItem(SK, JSON.stringify(S)); } catch(e) {}
+    // Re-render todo
+    renderMesStrip('mes-strip-inicio'); renderMesStrip('mes-strip-anal');
+    renderKPIs(); renderSems(); renderProjection(); renderRecent(); renderDatalists();
+    const active = document.querySelector('.nav-item.active');
+    if (active) {
+      const name = active.id.replace('nav-','');
+      if (name==='anal'){renderChart();renderCatBreakdown();renderHormiga();renderInsights();}
+      if (name==='metas') renderGoals();
+      if (name==='cfg')   renderConfig();
+      if (name==='reg')   renderTxList();
+    }
+  }
+
+  // Envuelve save() para también escribir a Firebase
+  const _origSave = save;
+  save = function() {
+    _origSave();
+    _localTs = Date.now();
+    clearTimeout(_fbTimer);
+    _fbTimer = setTimeout(() => {
+      if (!fireDb) return;
+      dot('sync');
+      fireDb.ref(FB_PATH).set(Object.assign({}, S, {_ts: _localTs}))
+        .then(() => dot('on'))
+        .catch(() => dot('off'));
+    }, 600);
+  };
+
+  if (typeof firebase === 'undefined') return;
+  try {
+    firebase.apps.length ? firebase.app() : firebase.initializeApp(FB_CONF);
+    fireDb = firebase.database();
+    dot('sync');
+
+    fireDb.ref(FB_PATH).once('value').then(snap => {
+      const remote = snap.val();
+      if (remote && remote._ts) {
+        const lc = (S.ingresos||[]).length + (S.egresos||[]).length;
+        const rc = (remote.ingresos||[]).length + (remote.egresos||[]).length;
+        if (rc > lc || (rc === lc && remote._ts > _localTs)) {
+          _localTs = remote._ts;
+          applyRemote(remote);
+        }
+      }
+      // Si Firebase estaba vacío, subimos nuestro estado
+      if (!remote || !remote._ts) {
+        fireDb.ref(FB_PATH).set(Object.assign({}, S, {_ts: _localTs}));
+      }
+      dot('on');
+
+      // Listener en vivo — cambios desde otro dispositivo
+      fireDb.ref(FB_PATH).on('value', snap => {
+        const r = snap.val();
+        if (!r || !r._ts || r._ts <= _localTs + 1500) return;
+        _localTs = r._ts;
+        applyRemote(r);
+        dot('on');
+      });
+    }).catch(() => dot('off'));
+  } catch(e) { console.warn('CF Firebase:', e); }
+})();
 </script>
 </body></html>
