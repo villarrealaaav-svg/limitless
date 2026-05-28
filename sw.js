@@ -1,4 +1,4 @@
-const CACHE = 'limitless-v2';
+const CACHE = 'limitless-v3';
 
 // Solo los archivos críticos del launcher en install — el resto se cachea lazy
 const CORE = [
@@ -6,7 +6,13 @@ const CORE = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './logo-av.png'
+  './logo-av.png',
+  './personal.html',
+  './negocios.html',
+  './casa.html',
+  './aprende.html',
+  './mi-horario.html',
+  './finanzas.html'
 ];
 
 self.addEventListener('install', e => {
