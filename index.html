@@ -19,40 +19,35 @@
   --ink:#2a2520;--ink-soft:#5a5247;--ink-muted:#8a7d70;
   --line:#ddd3bf;--line-soft:#ede7d9;
   --clay:#b5603a;--clay-pale:rgba(181,96,58,.10);--clay-light:#d4855a;--clay-dark:#8f4a2a;
-  --c-finanzas:#3f7368;--c-horario:#b5603a;
+  --c-personal:#b5603a;
+  --c-negocios:#3f7368;
+  --c-casa:#7a5c3a;
+  --c-aprende:#4a6b8a;
   --font-display:'Fraunces',Georgia,serif;
   --font-ui:'Hanken Grotesk',system-ui,sans-serif;
   --radius-sm:8px;--radius-md:12px;--radius-lg:14px;--radius-pill:999px;
   --shadow-sm:0 2px 8px -2px rgba(42,37,32,.08);
   --shadow-md:0 6px 20px -6px rgba(42,37,32,.14);
-  --shadow-accent:0 0 0 2px var(--clay),0 8px 22px -10px rgba(181,96,58,.5);
   --ease-out:cubic-bezier(.22,1,.36,1);
   --t-fast:.15s;--t-med:.25s;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-
 body{
-  background:var(--paper);
-  color:var(--ink);
-  font-family:var(--font-ui);
-  line-height:1.5;
-  min-height:100dvh;
+  background:var(--paper);color:var(--ink);font-family:var(--font-ui);
+  line-height:1.5;min-height:100dvh;
   background-image:radial-gradient(circle at 20% -10%,#faf6ec 0%,transparent 50%);
   background-attachment:fixed;
 }
 
 /* ── Splash ─────────────────────────────────────────────────────────── */
 #splash{
-  position:fixed;inset:0;
-  background:var(--paper);
+  position:fixed;inset:0;background:var(--paper);
   background-image:radial-gradient(circle at 30% -10%,#faf6ec 0%,transparent 50%);
-  z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 #splash-inner{display:flex;flex-direction:column;align-items:center;justify-content:center}
 #splash img{
-  width:200px;max-width:58vw;
-  object-fit:contain;mix-blend-mode:multiply;
+  width:200px;max-width:58vw;object-fit:contain;mix-blend-mode:multiply;
   filter:sepia(.12) saturate(.85);
   animation:splashIn .55s cubic-bezier(.34,1.56,.64,1) forwards;
 }
@@ -65,8 +60,7 @@ body{
 .splash-sub{
   font-family:var(--font-ui);font-size:.6rem;font-weight:700;
   letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft);
-  margin-top:.35rem;
-  opacity:0;animation:fadeInSub .4s ease .52s forwards;
+  margin-top:.35rem;opacity:0;animation:fadeInSub .4s ease .52s forwards;
 }
 @keyframes splashIn{
   from{opacity:0;transform:scale(.72) rotate(-18deg)}
@@ -88,7 +82,6 @@ body{
 
 /* ── Layout ─────────────────────────────────────────────────────────── */
 .wrap{max-width:540px;margin:0 auto;padding:0 1.25rem}
-
 header{padding:2.4rem 0 1.6rem}
 .kicker{
   font-size:.68rem;letter-spacing:.26em;text-transform:uppercase;
@@ -100,28 +93,23 @@ h1{
   line-height:1;letter-spacing:-.02em;margin-top:.5rem;
 }
 h1 em{font-style:italic;color:var(--clay)}
-.header-sub{
-  font-size:.82rem;color:var(--ink-soft);margin-top:.6rem;
-}
+.header-sub{font-size:.82rem;color:var(--ink-soft);margin-top:.6rem}
 
 /* ── Sección ─────────────────────────────────────────────────────────── */
 .section-label{
   font-size:.65rem;font-weight:700;letter-spacing:.2em;
   text-transform:uppercase;color:var(--ink-muted);
-  margin:0 0 .8rem;
-  display:flex;align-items:center;gap:.7rem;
+  margin:0 0 .8rem;display:flex;align-items:center;gap:.7rem;
 }
 .section-label::after{content:'';flex:1;height:1px;background:var(--line)}
 
-/* ── App Cards ───────────────────────────────────────────────────────── */
+/* ── Category Cards ─────────────────────────────────────────────────── */
 .apps{display:flex;flex-direction:column;gap:.75rem;margin-bottom:2rem}
 
 .app-card{
   display:flex;align-items:center;gap:1rem;
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:var(--radius-lg);
-  padding:1.1rem 1.25rem;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius-lg);padding:1.1rem 1.25rem;
   text-decoration:none;color:inherit;
   box-shadow:var(--shadow-sm);
   transition:box-shadow var(--t-med) var(--ease-out),
@@ -135,8 +123,7 @@ h1 em{font-style:italic;color:var(--clay)}
   border-radius:var(--radius-lg) 0 0 var(--radius-lg);
 }
 .app-card:hover{
-  box-shadow:var(--shadow-md);
-  border-color:var(--app-color,var(--clay));
+  box-shadow:var(--shadow-md);border-color:var(--app-color,var(--clay));
   transform:translateY(-2px);
 }
 .app-card:active{transform:translateY(0);box-shadow:var(--shadow-sm)}
@@ -144,8 +131,7 @@ h1 em{font-style:italic;color:var(--clay)}
 .app-icon{
   width:48px;height:48px;border-radius:var(--radius-md);
   background:var(--app-bg,var(--clay-pale));
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
 .app-icon svg{width:24px;height:24px}
 
@@ -155,38 +141,23 @@ h1 em{font-style:italic;color:var(--clay)}
   letter-spacing:-.01em;color:var(--ink);line-height:1.2;
 }
 .app-name em{font-style:italic;color:var(--app-color,var(--clay))}
-.app-desc{
-  font-size:.78rem;color:var(--ink-soft);margin-top:.2rem;line-height:1.4;
-}
+.app-desc{font-size:.78rem;color:var(--ink-soft);margin-top:.2rem;line-height:1.4}
 
-.app-badge{
+.app-count{
   font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
-  padding:.2rem .55rem;border-radius:var(--radius-pill);
-  flex-shrink:0;
+  padding:.2rem .55rem;border-radius:var(--radius-pill);flex-shrink:0;
+  background:var(--clay-pale);color:var(--app-color,var(--clay));
 }
-.app-badge.live{background:rgba(78,154,82,.12);color:#3a7a3e}
-.app-badge.soon{background:var(--clay-pale);color:var(--clay)}
 
-.app-card.disabled{pointer-events:none;opacity:.7}
-.app-card.disabled:hover{transform:none;box-shadow:var(--shadow-sm)}
-
-/* ── Chevron ─────────────────────────────────────────────────────────── */
 .app-arrow{
-  color:var(--line);
-  transition:color var(--t-fast),transform var(--t-fast);
-  flex-shrink:0;
+  color:var(--line);transition:color var(--t-fast),transform var(--t-fast);flex-shrink:0;
 }
-.app-card:hover .app-arrow{
-  color:var(--app-color,var(--clay));
-  transform:translateX(3px);
-}
+.app-card:hover .app-arrow{color:var(--app-color,var(--clay));transform:translateX(3px)}
 
 /* ── Footer ──────────────────────────────────────────────────────────── */
 footer{
-  text-align:center;
-  font-family:var(--font-display);font-style:italic;
-  color:var(--ink-muted);font-size:.85rem;
-  padding:1.5rem 0 2.5rem;
+  text-align:center;font-family:var(--font-display);font-style:italic;
+  color:var(--ink-muted);font-size:.85rem;padding:1.5rem 0 2.5rem;
 }
 </style>
 </head>
@@ -208,44 +179,83 @@ footer{
     <p class="header-sub">Tu ecosistema personal. Todo en un lugar.</p>
   </header>
 
-  <p class="section-label">Herramientas</p>
+  <p class="section-label">Categorías</p>
 
   <div class="apps">
 
-    <!-- Mi Horario -->
-    <a class="app-card" href="mi-horario.html"
-       style="--app-color:var(--c-horario);--app-bg:var(--clay-pale)">
+    <!-- Personal -->
+    <a class="app-card" href="personal.html"
+       style="--app-color:var(--c-personal);--app-bg:rgba(181,96,58,.10)">
       <div class="app-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--clay)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="4" width="18" height="18" rx="3"/>
-          <path d="M16 2v4M8 2v4M3 10h18"/>
-          <circle cx="12" cy="16" r="1.5" fill="var(--clay)" stroke="none"/>
-          <path d="M12 13.5v1.5"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-personal)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
         </svg>
       </div>
       <div class="app-info">
-        <div class="app-name">Mi <em>Horario</em></div>
-        <div class="app-desc">Semana, año, vida en semanas y estadísticas por categoría</div>
+        <div class="app-name"><em>Personal</em></div>
+        <div class="app-desc">Horario semanal, finanzas y control de vida</div>
       </div>
-      <span class="app-badge live">En vivo</span>
+      <span class="app-count" style="background:rgba(181,96,58,.10);color:var(--c-personal)">2 apps</span>
       <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18l6-6-6-6"/>
       </svg>
     </a>
 
-    <!-- Finanzas -->
-    <a class="app-card" href="finanzas.html"
-       style="--app-color:var(--c-finanzas);--app-bg:rgba(63,115,104,.10)">
+    <!-- Negocios -->
+    <a class="app-card" href="negocios.html"
+       style="--app-color:var(--c-negocios);--app-bg:rgba(63,115,104,.10)">
       <div class="app-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-finanzas)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-negocios)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="7" width="20" height="14" rx="2"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+          <line x1="12" y1="12" x2="12" y2="16"/>
+          <line x1="10" y1="14" x2="14" y2="14"/>
         </svg>
       </div>
       <div class="app-info">
-        <div class="app-name" style="--app-color:var(--c-finanzas)">Ctrl<em>Fin</em></div>
-        <div class="app-desc">Transacciones, KPIs, metas de ahorro y proyecciones</div>
+        <div class="app-name"><em>Negocios</em></div>
+        <div class="app-desc">Melamina TAB, Nexo Láser y herramientas de taller</div>
       </div>
-      <span class="app-badge live">En vivo</span>
+      <span class="app-count" style="background:rgba(63,115,104,.10);color:var(--c-negocios)">2 apps</span>
+      <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
+
+    <!-- Casa -->
+    <a class="app-card" href="casa.html"
+       style="--app-color:var(--c-casa);--app-bg:rgba(122,92,58,.10)">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-casa)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div class="app-info">
+        <div class="app-name"><em>Casa</em></div>
+        <div class="app-desc">Biblioteca personal y herramientas del hogar</div>
+      </div>
+      <span class="app-count" style="background:rgba(122,92,58,.10);color:var(--c-casa)">1 app</span>
+      <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
+
+    <!-- Aprende -->
+    <a class="app-card" href="aprende.html"
+       style="--app-color:var(--c-aprende);--app-bg:rgba(74,107,138,.10)">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-aprende)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+      </div>
+      <div class="app-info">
+        <div class="app-name"><em>Aprende</em></div>
+        <div class="app-desc">Idiomas, lectura y aprendizaje continuo</div>
+      </div>
+      <span class="app-count" style="background:rgba(74,107,138,.10);color:var(--c-aprende)">1 app</span>
       <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18l6-6-6-6"/>
       </svg>
@@ -263,7 +273,6 @@ footer{
     splash.classList.add('exit');
     setTimeout(() => { splash.remove(); }, 700);
   }, 1900);
-
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js');
   }
