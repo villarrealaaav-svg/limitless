@@ -95,9 +95,28 @@ footer{text-align:center;font-family:var(--font-display);font-style:italic;color
 
   <div class="apps">
 
-    <!-- Libros -->
-    <a class="app-card" href="libros.html"
+    <!-- Recuperación de Libros -->
+    <a class="app-card" href="recuperacion.html"
        style="--app-color:var(--c-accent);--app-bg:var(--c-accent-pale)">
+      <div class="app-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12"/>
+        </svg>
+      </div>
+      <div class="app-info">
+        <div class="app-name">Recuperación <em>de Libros</em></div>
+        <div class="app-desc">Levantamiento, estado, clasificación y taras de almacenamiento</div>
+      </div>
+      <span class="app-badge live">En vivo</span>
+      <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
+
+    <!-- Mi Biblioteca (futura) -->
+    <div class="app-card disabled"
+         style="--app-color:var(--c-accent);--app-bg:var(--c-accent-pale)">
       <div class="app-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -108,13 +127,10 @@ footer{text-align:center;font-family:var(--font-display);font-style:italic;color
       </div>
       <div class="app-info">
         <div class="app-name">Mi <em>Biblioteca</em></div>
-        <div class="app-desc">Registro de libros leídos, en progreso y pendientes</div>
+        <div class="app-desc">Colección personal: leídos, en progreso y pendientes</div>
       </div>
-      <span class="app-badge live">En vivo</span>
-      <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 18l6-6-6-6"/>
-      </svg>
-    </a>
+      <span class="app-badge soon">Pronto</span>
+    </div>
 
   </div>
 

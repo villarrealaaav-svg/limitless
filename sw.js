@@ -1,6 +1,6 @@
-const CACHE = 'limitless-v4';
+const CACHE = 'limitless-v5';
 
-// Solo los archivos críticos del launcher en install — el resto se cachea lazy
+// Núcleo cacheado en install (para arranque offline). El resto se cachea lazy.
 const CORE = [
   './index.html',
   './manifest.json',
@@ -13,11 +13,16 @@ const CORE = [
   './aprende.html',
   './mi-horario.html',
   './finanzas.html',
-  './libros.html'
+  './recuperacion.html'
 ];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
+  // No abortar install si algún archivo falla (404, etc.)
+  e.waitUntil(
+    caches.open(CACHE).then(c =>
+      Promise.allSettled(CORE.map(u => c.add(u)))
+    )
+  );
   self.skipWaiting();
 });
 
@@ -35,23 +40,51 @@ self.addEventListener('message', e => {
   }
 });
 
+function isHtml(req) {
+  return req.mode === 'navigate' ||
+         req.destination === 'document' ||
+         req.url.endsWith('.html') ||
+         req.url.endsWith('/');
+}
+
 self.addEventListener('fetch', e => {
-  // Firebase y Fonts: red primero, sin cachear
-  if (e.request.url.includes('firebase') || e.request.url.includes('fonts.g') || e.request.url.includes('gstatic')) {
-    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+  const req = e.request;
+  if (req.method !== 'GET') return;
+
+  // Firebase: siempre red, nunca caché (datos en vivo)
+  if (req.url.includes('firebase') || req.url.includes('firebaseio')) {
+    e.respondWith(fetch(req).catch(() => caches.match(req)));
     return;
   }
-  // Todo lo demás: cache-first, cachea lazily si no existe
+
+  // HTML / navegación: RED PRIMERO → siempre versión fresca online, caché solo offline.
+  // Esto evita que la app se quede congelada en una versión vieja.
+  if (isHtml(req)) {
+    e.respondWith(
+      fetch(req)
+        .then(res => {
+          if (res && res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(req, clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(req).then(c => c || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // Fuentes y assets estáticos: caché primero, cachea lazy si no existe
   e.respondWith(
-    caches.match(e.request).then(cached => {
+    caches.match(req).then(cached => {
       if (cached) return cached;
-      return fetch(e.request).then(res => {
-        if (res.ok) {
+      return fetch(req).then(res => {
+        if (res && res.ok) {
           const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+          caches.open(CACHE).then(c => c.put(req, clone));
         }
         return res;
-      });
+      }).catch(() => cached);
     })
   );
 });

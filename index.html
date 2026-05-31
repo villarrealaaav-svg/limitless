@@ -35,7 +35,11 @@
 body{
   background:var(--paper);color:var(--ink);font-family:var(--font-ui);
   line-height:1.5;min-height:100dvh;
-  background-image:radial-gradient(circle at 20% -10%,#faf6ec 0%,transparent 50%);
+  background-image:
+    url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='260'%20height='260'%3E%3Cg%20fill='%232a2520'%20fill-opacity='.045'%3E%3Cpath%20transform='translate(22,34)%20rotate(-18)'%20d='M2%2021l21-9L2%203v7l15%202-15%202z'/%3E%3Cpath%20transform='translate(150,78)%20rotate(12)%20scale(.8)'%20d='M2%2021l21-9L2%203v7l15%202-15%202z'/%3E%3Cpath%20transform='translate(86,150)%20rotate(-8)%20scale(.95)'%20d='M2%2021l21-9L2%203v7l15%202-15%202z'/%3E%3Cpath%20transform='translate(196,184)%20rotate(28)%20scale(.7)'%20d='M2%2021l21-9L2%203v7l15%202-15%202z'/%3E%3Cpath%20transform='translate(40,210)%20rotate(6)%20scale(.6)'%20d='M2%2021l21-9L2%203v7l15%202-15%202z'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle at 20% -10%,#faf6ec 0%,transparent 50%);
+  background-repeat:repeat,no-repeat;
+  background-size:260px 260px,auto;
   background-attachment:fixed;
 }
 
@@ -234,9 +238,9 @@ footer{
       </div>
       <div class="app-info">
         <div class="app-name"><em>Casa</em></div>
-        <div class="app-desc">Biblioteca personal y herramientas del hogar</div>
+        <div class="app-desc">Recuperación de libros, biblioteca y hogar</div>
       </div>
-      <span class="app-count" style="background:rgba(122,92,58,.10);color:var(--c-casa)">1 app</span>
+      <span class="app-count" style="background:rgba(122,92,58,.10);color:var(--c-casa)">2 apps</span>
       <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M9 18l6-6-6-6"/>
       </svg>
