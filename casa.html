@@ -73,6 +73,7 @@ h1 em{font-style:italic;color:var(--c-accent)}
 .app-desc{font-size:.78rem;color:var(--ink-soft);margin-top:.2rem;line-height:1.4}
 .app-badge{font-size:.55rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border-radius:var(--radius-pill);flex-shrink:0}
 .app-badge.soon{background:var(--c-accent-pale);color:var(--c-accent)}
+.app-badge.live{background:rgba(78,154,82,.12);color:#3a7a3e}
 .app-arrow{color:var(--line);transition:color var(--t-fast),transform var(--t-fast);flex-shrink:0}
 .app-card:hover .app-arrow{color:var(--app-color,var(--c-accent));transform:translateX(3px)}
 footer{text-align:center;font-family:var(--font-display);font-style:italic;color:var(--ink-muted);font-size:.85rem;padding:1.5rem 0 2.5rem}
@@ -95,8 +96,8 @@ footer{text-align:center;font-family:var(--font-display);font-style:italic;color
   <div class="apps">
 
     <!-- Libros -->
-    <div class="app-card disabled"
-         style="--app-color:var(--c-accent);--app-bg:var(--c-accent-pale)">
+    <a class="app-card" href="libros.html"
+       style="--app-color:var(--c-accent);--app-bg:var(--c-accent-pale)">
       <div class="app-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -109,8 +110,11 @@ footer{text-align:center;font-family:var(--font-display);font-style:italic;color
         <div class="app-name">Mi <em>Biblioteca</em></div>
         <div class="app-desc">Registro de libros leídos, en progreso y pendientes</div>
       </div>
-      <span class="app-badge soon">Pronto</span>
-    </div>
+      <span class="app-badge live">En vivo</span>
+      <svg class="app-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18l6-6-6-6"/>
+      </svg>
+    </a>
 
   </div>
 
