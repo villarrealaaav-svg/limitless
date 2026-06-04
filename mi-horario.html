@@ -36,6 +36,14 @@
 .es-cats{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
 .es-cat{padding:.3rem .7rem;border-radius:999px;border:1.5px solid var(--line);background:transparent;font-size:.75rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink-soft);transition:all .12s}
 .es-cat.sel{color:#fff;border-color:transparent}
+.es-sublabel{font-size:.6rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin:.2rem 0 .5rem}
+.es-presets{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem;max-height:30vh;overflow-y:auto}
+.es-preset{display:flex;align-items:center;gap:.4rem;padding:.4rem .75rem;border-radius:10px;border:1.5px solid var(--line);background:var(--paper);font-size:.82rem;font-weight:600;cursor:pointer;font-family:inherit;color:var(--ink);transition:all .12s}
+.es-preset:hover{border-color:var(--pc,var(--clay))}
+.es-preset.sel{color:#fff;border-color:transparent;background:var(--pc,var(--clay))}
+.es-preset .pdot{width:9px;height:9px;border-radius:50%;background:var(--pc,var(--clay));flex-shrink:0}
+.es-preset.sel .pdot{background:rgba(255,255,255,.85)}
+.es-toggle-custom{background:none;border:none;color:var(--clay);font-family:inherit;font-size:.74rem;font-weight:700;cursor:pointer;padding:.2rem 0;margin-bottom:.5rem;text-decoration:underline}
 .es-actions{display:flex;gap:.5rem;margin-top:.2rem}
 .es-btn{flex:1;padding:.72rem;border-radius:10px;border:none;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s}
 .es-btn.save{background:var(--clay);color:#fff}
@@ -167,6 +175,20 @@ const CAT_NAMES={rutina:'Rutina',idioma:'Idioma',lectura:'Lectura',trabajo:'Trab
 const CAT_COL={rutina:'#6f7a5a',idioma:'#b5603a',lectura:'#9a8362',trabajo:'#4a5568',comida:'#c2872f',
   finanzas:'#3f7368',cesar:'#6b5b95',macetas:'#8f4527',novia:'#b5527a',libre:'#4e9a52',
   estrategia:'#b8862b',reset:'#7a6a52',traslado:'#a99e8a'};
+
+// Actividades preestablecidas: [nombre, categoría]. La categoría alimenta la gráfica de Stats.
+const PRESETS=[
+  ['Despertar + agua','rutina'],['Estiramiento','rutina'],['Baño','rutina'],['Cepillarse','rutina'],
+  ['Café / activarse','rutina'],['Vestirse / arreglarse','rutina'],['Agenda ligera','rutina'],
+  ['Idioma','idioma'],['Lectura','lectura'],
+  ['Desayuno','comida'],['Comida','comida'],['Cena','comida'],
+  ['Hotel · jornada','trabajo'],['Trabajo','trabajo'],
+  ['Finanzas / Admin','finanzas'],['Estrategia','estrategia'],
+  ['César','cesar'],['Macetas','macetas'],
+  ['Novia','novia'],['Tiempo libre / relax','libre'],
+  ['Traslado','traslado'],['Salida','traslado'],
+  ['Wind-down','reset'],['Dormir','reset'],
+];
 
 const morning=[
   ['5:15','5:20','Despertar + agua','','rutina'],['5:20','5:30','Cepillarse + lavarse','','rutina'],
@@ -657,14 +679,24 @@ if('serviceWorker' in navigator){
 <div id="edit-sheet" role="dialog" aria-modal="true">
   <div class="es-handle"></div>
   <div class="es-title" id="es-title">Editar bloque</div>
+
+  <div class="es-sublabel">Actividad</div>
+  <div class="es-presets" id="es-presets"></div>
+  <button type="button" class="es-toggle-custom" id="es-toggle-custom">+ Escribir otra…</button>
+
+  <div class="es-row" id="es-name-row" style="display:none">
+    <div class="es-field wide"><label>Nombre</label><input type="text" id="es-name" placeholder="Actividad..."></div>
+  </div>
+
   <div class="es-row">
     <div class="es-field"><label>Inicio</label><input type="time" id="es-from"></div>
     <div class="es-field"><label>Fin</label><input type="time" id="es-to"></div>
-    <div class="es-field wide"><label>Nombre</label><input type="text" id="es-name" placeholder="Actividad..."></div>
   </div>
   <div class="es-row">
     <div class="es-field wide"><label>Nota (opcional)</label><input type="text" id="es-note" placeholder="Detalle..."></div>
   </div>
+
+  <div class="es-sublabel">Categoría</div>
   <div class="es-cats" id="es-cats"></div>
   <div class="es-actions" id="es-actions"></div>
 </div>`);
@@ -698,12 +730,48 @@ if('serviceWorker' in navigator){
       const col=CAT_COL[c];
       return `<button class="es-cat${c===selCat?' sel':''}" data-cat="${c}" style="${c===selCat?`background:${col};`:''}color:${c===selCat?'#fff':col}">${CAT_NAMES[c]}</button>`;
     }).join('');
+    function selectCat(c){
+      catsEl.querySelectorAll('.es-cat').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color=CAT_COL[b.dataset.cat];});
+      const t=catsEl.querySelector('.es-cat[data-cat="'+c+'"]');
+      if(t){t.classList.add('sel');t.style.background=CAT_COL[c];t.style.color='#fff';}
+    }
     catsEl.querySelectorAll('.es-cat').forEach(btn=>{
-      btn.onclick=()=>{
-        catsEl.querySelectorAll('.es-cat').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color=CAT_COL[b.dataset.cat];});
-        btn.classList.add('sel');btn.style.background=CAT_COL[btn.dataset.cat];btn.style.color='#fff';
+      btn.onclick=()=>{selectCat(btn.dataset.cat);
+        // selección manual de categoría = ya no coincide con un preset exacto
+        presetsEl.querySelectorAll('.es-preset').forEach(p=>p.classList.remove('sel'));
       };
     });
+
+    // Actividades preestablecidas
+    const presetsEl=document.getElementById('es-presets');
+    const curName=bk?bk[2]:'';
+    presetsEl.innerHTML=PRESETS.map((p,i)=>{
+      const[n,c]=p,col=CAT_COL[c];
+      const sel=n===curName&&c===selCat;
+      return `<button type="button" class="es-preset${sel?' sel':''}" data-i="${i}" style="--pc:${col}"><span class="pdot"></span>${n}</button>`;
+    }).join('');
+    presetsEl.querySelectorAll('.es-preset').forEach(btn=>{
+      btn.onclick=()=>{
+        const[n,c]=PRESETS[+btn.dataset.i];
+        document.getElementById('es-name').value=n;
+        selectCat(c);
+        presetsEl.querySelectorAll('.es-preset').forEach(p=>p.classList.remove('sel'));
+        btn.classList.add('sel');
+      };
+    });
+
+    // Toggle nombre personalizado: visible si el nombre actual no es un preset
+    const nameRow=document.getElementById('es-name-row');
+    const toggleBtn=document.getElementById('es-toggle-custom');
+    const isPresetName=PRESETS.some(p=>p[0]===curName&&p[1]===selCat);
+    const showCustom=!!curName&&!isPresetName;
+    nameRow.style.display=showCustom?'flex':'none';
+    toggleBtn.style.display=showCustom?'none':'block';
+    toggleBtn.onclick=()=>{
+      nameRow.style.display='flex';toggleBtn.style.display='none';
+      presetsEl.querySelectorAll('.es-preset').forEach(p=>p.classList.remove('sel'));
+      document.getElementById('es-name').focus();
+    };
 
     // Acciones
     const actEl=document.getElementById('es-actions');
@@ -759,7 +827,7 @@ if('serviceWorker' in navigator){
     _ctx={date,idx,jsd,baseLen};
     ov.classList.add('open');
     requestAnimationFrame(()=>sheet.classList.add('open'));
-    setTimeout(()=>document.getElementById('es-name').focus(),380);
+    sheet.scrollTop=0;
   };
 })();</script>
 </body>
