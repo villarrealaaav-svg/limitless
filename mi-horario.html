@@ -49,20 +49,6 @@
 .es-loc:hover{border-color:var(--clay)}
 .es-loc.sel{color:#fff;border-color:transparent;background:var(--clay)}
 .blk .loc{display:inline-flex;align-items:center;gap:.2rem;font-size:.72rem;font-weight:600;color:var(--clay);margin-top:.15rem}
-/* ── Vista Pasaje ── */
-.pasaje-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.1rem 1.15rem;margin-bottom:1rem}
-.pasaje-fare{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:.4rem}
-.pasaje-fare label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
-.pasaje-fare input{width:90px;background:var(--paper);border:1.5px solid var(--line);border-radius:8px;padding:.45rem .6rem;font-family:inherit;font-size:.95rem;color:var(--ink);outline:none}
-.pasaje-fare input:focus{border-color:var(--clay)}
-.pasaje-total{font-family:'Fraunces',serif;font-size:2rem;font-weight:600;color:var(--clay);line-height:1.1}
-.pasaje-total small{display:block;font-family:inherit;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-muted)}
-.pasaje-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem .2rem;border-bottom:1px solid var(--line-soft)}
-.pasaje-row:last-child{border-bottom:none}
-.pasaje-row .pd{font-weight:600;font-size:.9rem}
-.pasaje-row .pt{font-size:.75rem;color:var(--ink-muted)}
-.pasaje-row .pc{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;color:var(--ink)}
-.pasaje-row.zero .pc{color:var(--ink-muted)}
 .es-actions{display:flex;gap:.5rem;margin-top:.2rem}
 .es-btn{flex:1;padding:.72rem;border-radius:10px;border:none;font-family:inherit;font-size:.88rem;font-weight:700;cursor:pointer;transition:all .15s}
 .es-btn.save{background:var(--clay);color:#fff}
@@ -95,7 +81,6 @@
     <button class="vbtn" data-v="year">Año</button>
     <button class="vbtn" data-v="vida">Mi vida</button>
     <button class="vbtn" data-v="stats">Stats</button>
-    <button class="vbtn" data-v="pasaje">Pasaje</button>
   </nav>
   <div id="v-horario">
     <div class="week-nav">
@@ -153,12 +138,6 @@
       <div><h2 style="font-family:'Fraunces',serif;font-size:1.7rem">Estadísticas</h2></div>
     </div>
     <div style="padding:0 .3rem" id="statsWrap"></div>
-  </div>
-  <div id="v-pasaje" hidden>
-    <div class="dayhead" style="padding-top:1rem">
-      <div><h2 style="font-family:'Fraunces',serif;font-size:1.7rem">Pasaje</h2><div class="theme">Gasto semanal estimado en traslados</div></div>
-    </div>
-    <div style="padding:0 .3rem" id="pasajeWrap"></div>
   </div>
 </div>
 
@@ -343,7 +322,7 @@ const fmtShort=d=>d.toLocaleDateString('es-MX',{day:'numeric',month:'short'});
 const isoWeek=d=>{const dt=new Date(d);dt.setHours(0,0,0,0);dt.setDate(dt.getDate()+3-(dt.getDay()+6)%7);
   const w1=new Date(dt.getFullYear(),0,4);return 1+Math.round(((dt-w1)/86400000-(3-(w1.getDay()+6)%7))/7)};
 
-const VIEWS=['horario','year','vida','stats','pasaje'];
+const VIEWS=['horario','year','vida','stats'];
 let currentView='horario';
 function switchView(v){
   VIEWS.forEach(id=>document.getElementById('v-'+id).hidden=id!==v);
@@ -353,7 +332,6 @@ function switchView(v){
   if(v==='year')renderYear();
   else if(v==='vida')renderVida();
   else if(v==='stats')renderStats();
-  else if(v==='pasaje')renderPasaje();
 }
 document.querySelectorAll('.vbtn').forEach(b=>b.onclick=()=>switchView(b.dataset.v));
 
@@ -626,33 +604,6 @@ function renderStats(){
   </div>`;
 
   wrap.innerHTML=html;
-}
-
-function renderPasaje(){
-  const wrap=document.getElementById('pasajeWrap');
-  const fare=parseFloat(localStorage.getItem('pasaje_fare')||'12')||0;
-  const rows=SHORT.map((lbl,tab)=>{
-    const jsd=jsDay(tab);
-    const trips=(DAYS[jsd]?.blocks||[]).filter(b=>b[4]==='traslado').length;
-    return {lbl,trips,cost:trips*fare};
-  });
-  const totalTrips=rows.reduce((a,r)=>a+r.trips,0);
-  const totalCost=totalTrips*fare;
-  wrap.innerHTML=`
-    <div class="pasaje-card">
-      <div class="pasaje-fare">
-        <label>Costo por viaje</label>
-        <span style="font-weight:600">$</span><input type="number" id="fareInput" value="${fare}" min="0" step="0.5">
-      </div>
-      <div class="pasaje-total">$${totalCost.toFixed(2)}<small>${totalTrips} viajes · semana estimada</small></div>
-    </div>
-    <div class="pasaje-card">
-      ${rows.map(r=>`<div class="pasaje-row${r.trips?'':' zero'}"><div><div class="pd">${r.lbl}</div><div class="pt">${r.trips} viaje${r.trips!==1?'s':''}</div></div><div class="pc">$${r.cost.toFixed(2)}</div></div>`).join('')}
-    </div>
-    <p style="font-size:.74rem;color:var(--ink-muted);padding:.2rem .3rem;line-height:1.5">Estimado según los bloques de <b>traslado</b> de tu horario. Ajusta el costo por viaje y se recalcula solo. Mensual aprox: <b>$${(totalCost*4.3).toFixed(0)}</b>.</p>`;
-  document.getElementById('fareInput').onchange=function(){
-    localStorage.setItem('pasaje_fare',this.value||'0');renderPasaje();
-  };
 }
 
 let _notifTimers=[],_lastNotifDay=-1;

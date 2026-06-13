@@ -1,4 +1,4 @@
-const CACHE = 'limitless-v6';
+const CACHE = 'limitless-v7';
 
 // Núcleo cacheado en install (para arranque offline). El resto se cachea lazy.
 const CORE = [
@@ -13,7 +13,8 @@ const CORE = [
   './aprende.html',
   './mi-horario.html',
   './finanzas.html',
-  './recuperacion.html'
+  './recuperacion.html',
+  './pasaje.html'
 ];
 
 self.addEventListener('install', e => {
