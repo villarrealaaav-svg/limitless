@@ -1,4 +1,4 @@
-const CACHE = 'limitless-v5';
+const CACHE = 'limitless-v6';
 
 // Núcleo cacheado en install (para arranque offline). El resto se cachea lazy.
 const CORE = [
